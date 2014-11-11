@@ -1,50 +1,136 @@
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.core.CvType;
 import org.opencv.core.Size;
+import java.awt.image.*;
 
+import javax.imageio.ImageIO;
+import javax.swing.SwingWorker;
 
-public class Filter {
-    private String imgpath;
-    private String destpath;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class Filter extends SwingWorker<BufferedImage,BufferedImage>{
     
-    public Filter( ) {
-        imgpath = "";
-        destpath = "";
+    private BufferedImage image;
+    private String filterT;
+    public Filter(BufferedImage img, String type) {
+        System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
+        this.image = img;
+        this.filterT = type;
+    }
+    public enum FilterType{
+        BLUR, SHARPEN, EDGE, HISTOGRAM 
     }
     
-    public void setImgPath( String path ) {
-    	imgpath = path;    	
+    protected BufferedImage doInBackground () throws IOException {
+                
+                BufferedImage out;
+                FilterType selection = FilterType.valueOf(filterT);
+                switch (selection) {
+                    case BLUR:
+                        out = this.blur();
+                        break;
+                    case SHARPEN:
+                        out = this.sharpen();
+                        break;
+                    case EDGE:
+                        out = this.edge();
+                        break;
+                    case HISTOGRAM:
+                        out = this.histogram();
+                        break;
+                    default:
+                        out = null;
+                        break;
+                }
+                return out;
+            }
+    
+    
+    private BufferedImage blur(){
+        byte[] resultPixels;
+        Mat destination = new Mat();
+        BufferedImage result;
+        try {
+            double width = image.getWidth();
+            double height = image.getHeight();
+            Mat source = new Mat(new Size(width,height), CvType.CV_8UC3); 
+            MatOfByte resultBytes = new MatOfByte();
+            byte[] sourcePixels = ((DataBufferByte)
+                    image.getRaster().getDataBuffer()).getData();
+            source.put(0, 0, sourcePixels);
+            destination = new Mat(source.rows(),source.cols(),source.type());
+            Imgproc.GaussianBlur(source, destination,new Size(25,25), 0);
+            Highgui.imencode(".png", destination, resultBytes);
+            resultPixels = resultBytes.toArray();
+            } catch (Exception e) {
+                System.out.println("Blurring Filter Error " + e.getMessage());
+                destination  = null;
+                resultPixels = null;            
+                }
+        InputStream buffer = new ByteArrayInputStream(resultPixels);
+        try{result = ImageIO.read(buffer);}
+        catch(Exception e){
+            System.out.println("Sharpen IO: "+e.getMessage());
+            result = null;
+            }
+        return result;
     }
     
-    public void setDestPath( String path ) {
-    	destpath = path;
-    }
-    
-    public void sharpen() {
+    private BufferedImage sharpen() {
+        byte[] resultPixels;
+        Mat destination = new Mat();
+        BufferedImage result;
         try{
-            System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
-            Mat source = Highgui.imread(imgpath,Highgui.CV_LOAD_IMAGE_COLOR);
-            Mat destination = new Mat(source.rows(),source.cols(),source.type());
+            double width = image.getWidth();
+            double height = image.getHeight();
+            Mat source = new Mat(new Size(width,height), CvType.CV_8UC3);
+            MatOfByte resultBytes = new MatOfByte();
+            byte[] sourcePixels = ((DataBufferByte)
+                                  image.getRaster().getDataBuffer()).getData();
+
+            source.put(0, 0, sourcePixels);
+            destination = new Mat(source.rows(),source.cols(),source.type());
             Imgproc.GaussianBlur(source, destination, new Size(0,0), 10);
             Core.addWeighted(source, 1.5, destination, -0.5, 0, destination);
-            Highgui.imwrite(destpath, destination);
+            Highgui.imencode(".png", destination, resultBytes);
+            resultPixels = resultBytes.toArray();
         }catch (Exception e) {
-        	System.out.println("Error: " + e.getMessage());
+        	System.out.println("Sharpening Filter Error " + e.getMessage());
+            destination  = null;
+            resultPixels = null;
         }
+        InputStream buffer = new ByteArrayInputStream(resultPixels);
+        try{result = ImageIO.read(buffer);}
+        catch(Exception e){
+            System.out.println("Sharpen IO: "+e.getMessage());
+            result = null;
+            }
+        return result;
+
     }
     
-    public void edgeDetect() {
-    	try {
-            int kernelSize = 3;
-    	    System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
-    	    Mat source = Highgui.imread(imgpath,Highgui.CV_LOAD_IMAGE_GRAYSCALE);
-    	    Mat destination = new Mat(source.rows(),source.cols(),source.type());
+    private BufferedImage edge(){
+        byte[] resultPixels;
+        Mat destination = new Mat();
+        BufferedImage result;
+        try{
+            double width = image.getWidth();
+            double height = image.getHeight();
+            Mat source = new Mat(new Size(width,height), CvType.CV_8UC3);
+            MatOfByte resultBytes = new MatOfByte();
+            byte[] sourcePixels = ((DataBufferByte)
+                                  image.getRaster().getDataBuffer()).getData();
+            source.put(0, 0, sourcePixels);
+    	    destination = new Mat(source.rows(),source.cols(),source.type());
+    	    int kernelSize = 3;
     	    Mat kernel = new Mat(kernelSize,kernelSize, CvType.CV_32F){
     	        {
-    	    	    //Use top three for light objects like balloons.jpg
     	        	put(1,2,3);
     	            put(1,1,1);
     	            put(1,2,3);
@@ -56,27 +142,30 @@ public class Filter {
     	            put(-2,0,2);
     	            put(-3,0,3);
     	            put(-2,0,2);
-    	            
-    	            //Use below ones for the darker images like boycolor.jpg
-    	            /*put(1,2,3);
-    	            put(1,1,1);
-    	            put(1,2,3);
-
-    	            put(2,3,2);
-    	            put(0,0,0);
-    	            put(-2,-3,-2);
-    	          
-    	            put(2,0,-2);
-    	            put(3,0,-3);
-    	            put(2,0,-2);
-    	            */
     	        }
     	    };	      
     	    Imgproc.filter2D(source, destination, -1, kernel);
-    	    Highgui.imwrite(destpath, destination);
-    	} catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-    	}
+    	    Core.addWeighted(source, 1.5, destination, -0.5, 0, destination);
+            Highgui.imencode(".png", destination, resultBytes);
+            resultPixels = resultBytes.toArray();
+        }catch (Exception e) {
+            System.out.println("Edge Filter Error " + e.getMessage());
+            destination  = null;
+            resultPixels = null;
+        }
+        InputStream buffer = new ByteArrayInputStream(resultPixels);
+        try{result = ImageIO.read(buffer);}
+        catch(Exception e){
+            System.out.println("Sharpen IO: "+e.getMessage());
+            result = null;
+            }
+        return result;
 
     }
-}
+        
+    
+    private BufferedImage histogram(){
+        return image;
+    }
+
+}//End Filter Class

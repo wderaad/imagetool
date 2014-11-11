@@ -1,23 +1,23 @@
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImageList {
 
-    private List<Image> imgList = new ArrayList<Image>();
+    private List<BufferedImage> imgList = new ArrayList<BufferedImage>();
     private int current; 
 
-    public ImageList(Image img) {
+    public ImageList(BufferedImage img) {
         super();
         this.imgList.add(img);
         current = 0;
     }
 
-    public Image getCurrentImage() {
+    public BufferedImage getCurrentImage() {
         return this.imgList.get(current);
     }
 
-    public void addImage(Image img) {
+    public void addImage(BufferedImage img) {
         this.imgList.add(img);
         this.current++;
     }
