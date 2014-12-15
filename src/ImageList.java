@@ -31,7 +31,7 @@ public class ImageList {
     
     public void resetList(){
         imgList = new CopyOnWriteArrayList<BufferedImage>(
-                imgList.subList(0, 0));
+                imgList.subList(0, 1));
         current.set(0);
     }
     public boolean isNext(){

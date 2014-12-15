@@ -130,8 +130,7 @@ public class ImageToolCore {
         });
         toolBar.add(btnSave);
         
-        JButton btnClose = new JButton("Close");
-        toolBar.add(btnClose);
+
         
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(119, 136, 153));
@@ -171,6 +170,7 @@ public class ImageToolCore {
          
                 //Display the window.
                 pList.pack();
+                pList.setLocationRelativeTo(frmIPT);
                 pList.setVisible(true);                
             }
         });
@@ -197,6 +197,7 @@ public class ImageToolCore {
          
                 //Display the window.
                 pList.pack();
+                pList.setLocationRelativeTo(frmIPT);
                 pList.setVisible(true);                
             }
         });
@@ -407,7 +408,20 @@ public class ImageToolCore {
         filterPanel.add(btnGray);
         filterPanel.add(btnEdge);
 
-        
+        JButton btnReset = new JButton("Reset");
+        btnReset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                model.resetList();
+                updateImage();
+                btnDarkenImage.setEnabled(true);
+                btnBrightenImage.setEnabled(true);
+                btnBlurImage.setEnabled(true);
+                btnEqualize.setEnabled(true);
+                btnSharpen.setEnabled(true);
+                btnEdge.setEnabled(false);
+            }
+        });
+        toolBar.add(btnReset);
 
         
         GridBagConstraints gbc_panel = new GridBagConstraints();
@@ -472,6 +486,8 @@ public class ImageToolCore {
         gbc_btnNext.gridy = 0;
         navPanel.add(btnNext, gbc_btnNext);
         frmIPT.pack();
+        frmIPT.setLocationRelativeTo(null);
+
     }
     
     private void openImage(){
