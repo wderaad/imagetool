@@ -21,6 +21,10 @@ public class ImageList {
     }
 
     public void addImage(BufferedImage img) {
+        if(current.get() < imgList.size() -1){
+            imgList = new CopyOnWriteArrayList<BufferedImage>(
+                    imgList.subList(0, current.get()+1));
+        }
         imgList.add(img);
         current.incrementAndGet();
     }
