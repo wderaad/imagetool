@@ -14,6 +14,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
@@ -229,10 +231,12 @@ public class ImageToolCore {
 
                         SwingWorker<BufferedImage,BufferedImage> worker = new
                                 SwingWorker<BufferedImage,BufferedImage>(){
-                            protected BufferedImage doInBackground() throws Exception{
+                            protected BufferedImage doInBackground()
+                                    throws Exception{
                                 BufferedImage current = interm;
                                 while(!tempProcess.isEmpty()){
-                                    Filter filter = new Filter(current,tempProcess.poll());
+                                    Filter filter = new 
+                                            Filter(current,tempProcess.poll());
                                     filter.execute();
                                     current = filter.get();
                                     publish(current);

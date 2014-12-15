@@ -104,13 +104,6 @@ public class Filter extends SwingWorker<BufferedImage,BufferedImage>{
     }
     
     private BufferedImage sharpen() {
-        /* Sleep to help illustrate concurrency */
-        try {
-           // Thread.sleep(4000);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-        
         byte[] resultPixels;
         Mat destination = new Mat();
         BufferedImage result;
@@ -156,24 +149,10 @@ public class Filter extends SwingWorker<BufferedImage,BufferedImage>{
             byte[] sourcePixels = ((DataBufferByte)
                                   image.getRaster().getDataBuffer()).getData();
             source.put(0, 0, sourcePixels);
-    	    destination = new Mat(source.rows(),source.cols(),source.type());
-    	    int kernelSize = 3;
-    	    Mat kernel = new Mat(kernelSize,kernelSize, CvType.CV_32F){
-    	        {               	            
-    	            put(0,0,-1);
-    	            put(0,1,0);
-    	            put(0,2,1);
-
-    	            put(1,0-2);
-    	            put(1,1,0);
-    	            put(1,2,2);
-
-    	            put(2,0,-1);
-    	            put(2,1,0);
-    	            put(2,2,1);
-    	        }
-    	    };	      
-    	    Imgproc.filter2D(source, destination, -1, kernel);
+            Mat temp = new Mat(source.rows(),source.cols(),source.type());
+    	    destination = new Mat(source.rows(),source.cols(),source.type());   
+    	    Imgproc.Laplacian(source, temp, CvType.CV_8UC1);
+    	    org.opencv.core.Core.convertScaleAbs(temp, destination);
             Highgui.imencode(".png", destination, resultBytes);
             resultPixels = resultBytes.toArray();
         }catch (Exception e) {
