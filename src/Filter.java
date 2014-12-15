@@ -29,27 +29,27 @@ public class Filter extends SwingWorker<BufferedImage,BufferedImage>{
     
     protected BufferedImage doInBackground () throws IOException {
                 
-                BufferedImage out;
-                FilterType selection = FilterType.valueOf(filterT);
-                switch (selection) {
-                    case BLUR:
-                        out = this.blur();
-                        break;
-                    case SHARPEN:
-                        out = this.sharpen();
-                        break;
-                    case EDGE:
-                        out = this.edge();
-                        break;
-                    case HISTOGRAM:
-                        out = this.histogram();
-                        break;
-                    default:
-                        out = null;
-                        break;
-                }
-                return out;
-            }
+        BufferedImage out;
+        FilterType selection = FilterType.valueOf(filterT);
+        switch (selection) {
+            case BLUR:
+                out = this.blur();
+                break;
+            case SHARPEN:
+                out = this.sharpen();
+                break;
+            case EDGE:
+                out = this.edge();
+                break;
+            case HISTOGRAM:
+                out = this.histogram();
+                break;
+            default:
+                out = null;
+                break;
+        }
+        return out;
+    }
     
     
     private BufferedImage blur(){
@@ -83,6 +83,13 @@ public class Filter extends SwingWorker<BufferedImage,BufferedImage>{
     }
     
     private BufferedImage sharpen() {
+        /* Sleep to help illustrate concurrency */
+        try {
+           // Thread.sleep(4000);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        
         byte[] resultPixels;
         Mat destination = new Mat();
         BufferedImage result;
