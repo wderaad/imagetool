@@ -169,6 +169,23 @@ public class ImageToolCore {
         filterPanel.add(btnSharpen);
         
         JButton btnEqualize = new JButton("Equalize");
+        btnEqualize.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                BufferedImage interm = model.getCurrentImage();
+                Filter filt = new Filter(interm, "HISTOGRAM"){
+                    protected void done(){
+                        try {
+                            BufferedImage res = get();
+                            model.addImage(res);
+                            updateImage();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                filt.execute();
+            }
+        });
         filterPanel.add(btnEqualize);
         
         JButton btnBlurImage = new JButton("Blur");
@@ -192,13 +209,64 @@ public class ImageToolCore {
         filterPanel.add(btnBlurImage);
         
         JButton btnBrightenImage = new JButton("Brighten");
+        btnBrightenImage.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                BufferedImage interm = model.getCurrentImage();
+                Filter filt = new Filter(interm, "BRIGHT"){
+                    protected void done(){
+                        try {
+                            BufferedImage res = get();
+                            model.addImage(res);
+                            updateImage();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                filt.execute();
+            }
+        });
         filterPanel.add(btnBrightenImage);
         
         JButton btnDarkenImage = new JButton("Darken");
+        btnDarkenImage.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                BufferedImage interm = model.getCurrentImage();
+                Filter filt = new Filter(interm, "DARK"){
+                    protected void done(){
+                        try {
+                            BufferedImage res = get();
+                            model.addImage(res);
+                            updateImage();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                filt.execute();
+            }
+        });
         filterPanel.add(btnDarkenImage);
         
-        JButton btnConvertToGrayscale = new JButton("Grayscale");
-        filterPanel.add(btnConvertToGrayscale);
+        JButton btnGray = new JButton("Grayscale");
+        btnGray.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                BufferedImage interm = model.getCurrentImage();
+                Filter filt = new Filter(interm, "GRAY"){
+                    protected void done(){
+                        try {
+                            BufferedImage res = get();
+                            model.addImage(res);
+                            updateImage();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                filt.execute();
+            }
+        });
+        filterPanel.add(btnGray);
         
         JButton btnEdge = new JButton("Detect Edges");
         btnEdge.addActionListener(new ActionListener() {

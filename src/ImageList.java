@@ -24,6 +24,7 @@ public class ImageList {
         imgList.add(img);
         current.incrementAndGet();
     }
+    
     public void resetList(){
         imgList = new CopyOnWriteArrayList<BufferedImage>(
                 imgList.subList(0, 0));
